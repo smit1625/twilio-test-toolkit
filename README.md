@@ -36,6 +36,7 @@ TTT supports most of the more common Twilio scenarios:
 * Checking for Say elements and their content
 * Checking for Play elements and their content
 * Taking action on Gather elements and querying their contents
+* Timing out of Gather elements
 * Following and querying redirects
 * Dial and Hangup
 
@@ -204,12 +205,15 @@ Within a gather CallScope, you can use the following methods:
 	@call.gather?			# Returns true if the current scope **is** a gather. Compare with the has_gather? method.
 	@call.gather_action		# Returns the value of the action attribute for the gather.
 	@call.press("1")		# Simulates pressing the specified digits.
+	@call.force_timeout # Simulates waiting for the gather to end without pressing any digits.
 
 You can also use other CallScope methods (e.g. *has_say?* and similar.)
 
 The *press* method has a few caveats worth knowing. It's only callable once per gather - when you call it, TTT will immediately call the gather's action. There is no way to simulate pressing buttons slowly, and you don't really need to do this anyways - Twilio doesn't care and just passes them all at once. *press* simply fills out the value of params[:Digits] and calls your method, just like Twilio does.
 
 Although you can technically pass whatever you want to *press*, in practice Twilio only sends digits and #. Still it's probably a good idea to test garbage data in this parameter with your actions, so TTT doesn't get in your way if you want to call press with "UNICORNSANDPONIES" as a parameter.
+
+The *force_timeout* method automatically ends the current gather and moves on to the next sibling element in your TwiML. This allows you to test code that Gathers multiple times in a single TwiML document.
 
 TTT doesn't attempt to validate your TwiML, so it's worth knowing that Gather only allows Say, Pause, and Play as child elements. Nested Gathers are not supported.
 	

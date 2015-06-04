@@ -68,6 +68,11 @@ module TwilioTestToolkit
       root_call.request_for_twiml!(path, :digits => digits, :method => gather_method, :finish_on_key => gather_finish_on_key)
     end
 
+    def force_timeout
+      raise 'Not a gather' unless gather?
+      root_call.response_xml.at_xpath(@xml.path).remove
+    end
+
     # Make this easier to support TwiML elements...
     def method_missing(meth, *args, &block)
       # support any check for a given attribute on a given element
